@@ -27,7 +27,6 @@ public class ConnectionManager {
             connection = DriverManager.getConnection(properties.getUrl(), properties.getUser(), properties.getPassword());
         } catch (SQLException e) {
             e.printStackTrace();
-            // Обробка помилок при створенні з'єднання
         }
     }
 

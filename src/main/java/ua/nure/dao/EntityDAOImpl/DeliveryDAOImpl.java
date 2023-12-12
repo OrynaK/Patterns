@@ -3,6 +3,7 @@ package ua.nure.dao.EntityDAOImpl;
 import ua.nure.dao.ConnectionManager;
 import ua.nure.dao.EntityDAO.DeliveryDAO;
 import ua.nure.dao.Observer.EventListener;
+import ua.nure.dao.Observer.EventManager;
 import ua.nure.entity.Delivery;
 
 import java.sql.Connection;
@@ -16,14 +17,17 @@ public class DeliveryDAOImpl implements DeliveryDAO {
     private static final String UPDATE = "UPDATE delivery SET city=?, street=?, house_number=?, entrance=?, apartment_number=? WHERE order_id=?";
     private static final String GET_DELIVERY_BY_ORDER = "SELECT * FROM delivery WHERE order_id=?";
     Connection con;
+    private final EventManager eventManager;
 
-    public DeliveryDAOImpl(Connection connection) {
+    public DeliveryDAOImpl(Connection connection,EventManager eventManager) {
         con = connection;
+        this.eventManager = eventManager;
     }
 
     @Override
     public long add(Delivery delivery) {
         try {
+            con.setAutoCommit(false);
             PreparedStatement ps = con.prepareStatement(ADD_DELIVERY);
             int k = 0;
             ps.setLong(++k, delivery.getOrder_id());
@@ -34,9 +38,14 @@ public class DeliveryDAOImpl implements DeliveryDAO {
             ps.setInt(++k, delivery.getApartmentNumber());
             ps.executeUpdate();
             con.commit();
+            eventManager.notifyEntityAdded("DeliveryAdded", delivery);
             return delivery.getOrder_id();
         } catch (Exception e) {
-            ConnectionManager.rollback(con);
+            try {
+                con.setAutoCommit(true);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }
@@ -56,8 +65,8 @@ public class DeliveryDAOImpl implements DeliveryDAO {
             ps.setInt(++k, delivery.getEntrance());
             ps.setInt(++k, delivery.getApartmentNumber());
             ps.setLong(++k, order_id);
-
             ps.executeUpdate();
+            eventManager.notifyEntityUpdated("DekiveryUpdated", delivery);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }

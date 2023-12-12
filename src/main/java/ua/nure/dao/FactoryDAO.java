@@ -23,26 +23,26 @@ public class FactoryDAO implements Factory {
     }
 
     @Override
-    public UserDAO getUserDAO(EventManager userEventManager) {
+    public UserDAO getUserDAO(EventManager eventManager) {
         Connection connection = connectionManager.getConnection();
-        return new UserDAOImpl(connection, userEventManager);
+        return new UserDAOImpl(connection, eventManager);
     }
 
     @Override
-    public ClothingDAO getClothingDAO(EventManager clothingEventManager) {
+    public ClothingDAO getClothingDAO(EventManager eventManager) {
         Connection connection = connectionManager.getConnection();
-        return new ClothingDAOImpl(connection, clothingEventManager);
+        return new ClothingDAOImpl(connection, eventManager);
     }
 
     @Override
-    public OrderDAO getOrderDAO() {
+    public OrderDAO getOrderDAO(EventManager eventManager) {
         Connection connection = connectionManager.getConnection();
-        return new OrderDAOImpl(connection);
+        return new OrderDAOImpl(connection, eventManager);
     }
 
     @Override
-    public DeliveryDAO getDeliveryDAO() {
+    public DeliveryDAO getDeliveryDAO(EventManager eventManager) {
         Connection connection = connectionManager.getConnection();
-        return new DeliveryDAOImpl(connection);
+        return new DeliveryDAOImpl(connection, eventManager);
     }
 }

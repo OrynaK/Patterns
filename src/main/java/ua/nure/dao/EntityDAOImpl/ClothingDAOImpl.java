@@ -14,7 +14,7 @@ import java.util.List;
 
 public class
 ClothingDAOImpl implements ClothingDAO {
-    private final EventManager<Clothing> eventManager;
+    private final EventManager eventManager;
 
     private static final String GET_ALL_CLOTHES = "SELECT * FROM clothing";
     private static final String UPDATE = "UPDATE clothing SET name=?, size=?, color=?, season=?, amount=?, actual_price=?, sex=? WHERE id=?";
@@ -26,7 +26,7 @@ ClothingDAOImpl implements ClothingDAO {
     private static final String UPDATE_AMOUNT = "UPDATE clothing SET amount=? WHERE id=?";
     Connection con;
 
-    public ClothingDAOImpl(Connection connection, EventManager<Clothing> clothingEventManager) {
+    public ClothingDAOImpl(Connection connection, EventManager clothingEventManager) {
         this.con = connection;
         this.eventManager=clothingEventManager;
     }

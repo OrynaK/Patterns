@@ -17,7 +17,7 @@ public class ClothingListener implements EventListener<Clothing> {
 
     @Override
     public void entityRemoved(long id) {
-        System.out.println("It's your subscription!  removed with ID: " + id);
+        System.out.println("It's your subscription! Clothing removed with ID: " + id);
     }
 
     @Override

@@ -2,48 +2,45 @@ package ua.nure.dao.Observer;
 
 import ua.nure.entity.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class EventManager<T> {
+public class EventManager {
 
-    private Map<String, List<EventListener<T>>> listeners = new HashMap<>();
+    private Map<String, List<EventListener>> listeners = new HashMap<>();
 
-    public void unsubscribe(String eventType, EventListener<T> listener) {
-        List<EventListener<T>> eventListeners = listeners.get(eventType);
+    public void unsubscribe(String eventType, EventListener listener) {
+        List<EventListener> eventListeners = listeners.get(eventType);
         if (eventListeners != null) {
             eventListeners.remove(listener);
         }
     }
 
-    public void subscribe(String eventType, EventListener<T> listener) {
+    public void subscribe(String eventType, EventListener listener) {
         listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(listener);
     }
 
-    public void notifyEntityAdded(String eventType, T entity) {
-        List<EventListener<T>> eventListeners = listeners.get(eventType);
+    public void notifyEntityAdded(String eventType, Object entity) {
+        List<EventListener> eventListeners = listeners.get(eventType);
         if (eventListeners != null) {
-            for (EventListener<T> listener : eventListeners) {
+            for (EventListener listener : eventListeners) {
                 listener.entityAdded(entity);
             }
         }
     }
 
     public void notifyEntityRemoved(String eventType, long id) {
-        List<EventListener<T>> eventListeners = listeners.get(eventType);
+        List<EventListener> eventListeners = listeners.get(eventType);
         if (eventListeners != null) {
-            for (EventListener<T> listener : eventListeners) {
+            for (EventListener listener : eventListeners) {
                 listener.entityRemoved(id);
             }
         }
     }
 
-    public void notifyEntityUpdated(String eventType, T updatedEntity) {
-        List<EventListener<T>> eventListeners = listeners.get(eventType);
+    public void notifyEntityUpdated(String eventType, Object updatedEntity) {
+        List<EventListener> eventListeners = listeners.get(eventType);
         if (eventListeners != null) {
-            for (EventListener<T> listener : eventListeners) {
+            for (EventListener listener : eventListeners) {
                 listener.entityUpdated(updatedEntity);
             }
         }

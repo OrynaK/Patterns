@@ -10,10 +10,10 @@ import java.util.*;
 
 public class UserDAOImpl implements UserDAO {
 
-    private final EventManager<User> eventManager;
+    private final EventManager eventManager;
     Connection con;
 
-    public UserDAOImpl(Connection connection, EventManager<User> clothingEventManager) {
+    public UserDAOImpl(Connection connection, EventManager clothingEventManager) {
         con = connection;
         this.eventManager = clothingEventManager;
     }

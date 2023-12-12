@@ -24,11 +24,13 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Factory factory = new FactoryDAO();
 
-        DeliveryDAO deliveryDAO = factory.getDeliveryDAO();
-        OrderDAO orderDAO = factory.getOrderDAO();
+
 
         //TEST FIRST PRACTICE
-
+//        DeliveryDAO deliveryDAO = factory.getDeliveryDAO();
+//        UserDAO userDAO = factory.getUserDAO();
+//        ClothingDAO clothingDAO = factory.getClothingDAO();
+//        OrderDAO orderDAO = factory.getOrderDAO();
 //
 //        System.out.println("---TEST FIND BY ID---");
 //        System.out.println("User with id=1: " + userDAO.findById(1));
@@ -134,25 +136,36 @@ public class Main {
 //        System.out.println("Delivery after update: ");
 //        System.out.println(deliveryDAO.findById(1));
 
+
         //TEST SECOND PRACTICE
+        EventManager eventManager = new EventManager();
+        UserDAO userDAO = factory.getUserDAO(eventManager);
+        ClothingDAO clothingDAO = factory.getClothingDAO(eventManager);
+        DeliveryDAO deliveryDAO = factory.getDeliveryDAO(eventManager);
+        OrderDAO orderDAO = factory.getOrderDAO(eventManager);
 
-        EventManager<Clothing> clothingEventManager = new EventManager<>();
-        EventManager<User> userEventManager = new EventManager<>();
+        ClothingListener userAddClothingListener = new ClothingListener();
+        OrderListener userUpdatedOrderListener = new OrderListener();
+        DeliveryListener userAddDeliveryListener = new DeliveryListener();
+        UserListener userDeletedUserListener = new UserListener();
 
-        ClothingListener clothingListener = new ClothingListener();
-        UserListener userListener = new UserListener();
-
-        clothingEventManager.subscribe("UserAdded", clothingListener);
-//        userEventManager.subscribe("UserAdded", userListener);
-
-        UserDAO userDAO = factory.getUserDAO(userEventManager);
-        ClothingDAO clothingDAO = factory.getClothingDAO(clothingEventManager);
+        eventManager.subscribe("ClothingAdded", userAddClothingListener);
+        eventManager.subscribe("OrderUpdated", userUpdatedOrderListener);
+        eventManager.subscribe("UserRemoved", userDeletedUserListener);
+        eventManager.subscribe("DeliveryAdded", userAddDeliveryListener);
 
         Clothing clothing = new Clothing.Builder("T-Shirt", Size.M, "Red", Season.SUMMER, 10, new BigDecimal("19.99"), Sex.MALE).build();
         User user = new User.Builder("John", "Doe", "john.doe@example.com", "password123", "+123456789").build();
-
+        Delivery newDelivery = new Delivery.Builder( "тест", "тест", "тест")
+                .setApartmentNumber(1)
+                .setEntrance(1)
+                .setOrder_id(4)
+                .build();
         clothingDAO.add(clothing);
-        clothingEventManager.notifyEntityAdded("ClothingAdded", clothing);
+        orderDAO.updateStatus(1L,Status.DELIVERED);
+        userDAO.delete(4);
         userDAO.add(user);
+        clothingDAO.update(clothing);
+        deliveryDAO.add(newDelivery);
     }
 }

@@ -9,11 +9,11 @@ import ua.nure.entity.Clothing;
 import ua.nure.entity.User;
 
 public interface Factory {
-    UserDAO getUserDAO(EventManager<User> clothingEventManager);
+    UserDAO getUserDAO(EventManager eventManager);
 
-    ClothingDAO getClothingDAO(EventManager<Clothing> userEventManager);
+    ClothingDAO getClothingDAO(EventManager eventManager);
 
-    OrderDAO getOrderDAO();
+    OrderDAO getOrderDAO(EventManager eventManager);
 
-    DeliveryDAO getDeliveryDAO();
+    DeliveryDAO getDeliveryDAO(EventManager eventManager);
 }

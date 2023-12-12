@@ -13,17 +13,17 @@ public class UserListener implements EventListener<User> {
 
     @Override
     public void entityAdded(User entity) {
-        System.out.println("It's your User subscription! Added: " + entity);
+        System.out.println("It's your subscription! Added: " + entity);
     }
 
     @Override
     public void entityRemoved(long id) {
-        System.out.println("It's your User subscription! Removed with ID: " + id);
+        System.out.println("It's your subscription! User Removed with ID: " + id);
     }
 
     @Override
     public void entityUpdated(User updatedEntity) {
-        System.out.println("It's your User subscription! Updated: " + updatedEntity);
+        System.out.println("It's your subscription! Updated: " + updatedEntity);
     }
     @Override
     public void subscribeToEventType(String eventType) {

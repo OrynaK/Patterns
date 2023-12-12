@@ -3,6 +3,7 @@ package ua.nure.dao.EntityDAOImpl;
 import ua.nure.dao.ConnectionManager;
 import ua.nure.dao.EntityDAO.OrderDAO;
 import ua.nure.dao.Observer.EventListener;
+import ua.nure.dao.Observer.EventManager;
 import ua.nure.entity.ClothingOrder;
 import ua.nure.entity.Order;
 import ua.nure.entity.UserOrder;
@@ -15,10 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDAOImpl implements OrderDAO {
+    private final EventManager eventManager;
+
     Connection con;
 
-    public OrderDAOImpl(Connection connection) {
+    public OrderDAOImpl(Connection connection, EventManager eventManager) {
         con = connection;
+        this.eventManager = eventManager;
     }
 
     private static final String INSERT_ORDER = "INSERT INTO `order` (datetime, status) VALUES (DEFAULT,DEFAULT)";
@@ -57,6 +61,7 @@ public class OrderDAOImpl implements OrderDAO {
                                             try (PreparedStatement pst = con.prepareStatement(DELETE_DELIVERY)) {
                                                 pst.setLong(1, orderId);
                                                 pst.executeUpdate();
+                                                eventManager.notifyEntityRemoved("OrderRemoved", orderId);
                                             }
                                             con.commit();
                                         } else {
@@ -101,6 +106,7 @@ public class OrderDAOImpl implements OrderDAO {
                             prs.setString(3, "");
                             if (prs.executeUpdate() != 0) {
                                 con.commit();
+                                eventManager.notifyEntityAdded("OrderAdded", order);
                             } else {
                                 con.rollback();
                             }
@@ -267,6 +273,7 @@ public class OrderDAOImpl implements OrderDAO {
             ps.setString(++k, String.valueOf(status));
             ps.setLong(++k, orderId);
             ps.executeUpdate();
+            eventManager.notifyEntityUpdated("OrderUpdated", findById(orderId));
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }

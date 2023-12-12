@@ -142,31 +142,31 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
-INSERT INTO user (name, surname, email, password, phone)
-VALUES ('Іван', 'Петров', 'ivan@example.com', 'пароль123', '+380123456789'),
-       ('Марія', 'Іванова', 'maria@example.com', 'пароль456', '+380987654321'),
-       ('Олег', 'Сидоров', 'oleg@example.com', 'пароль789', '+380777888999');
-INSERT INTO user (name, surname, email, password, phone, role)
-VALUES ('Адміністратор', 'Адміністраторович', 'admin@example.com', 'admin123', '+380111222333', 'ADMIN');
-
-
-INSERT INTO clothing (name, size, color, season, amount, actual_price, sex)
-VALUES ('Футболка 1', 'M', 'Червона', 'SUMMER', 10, 19.99, 'UNISEX'),
-       ('Шорти', 'L', 'Сині', 'SUMMER', 20, 29.99, 'MALE'),
-       ('Сукня', 'M', 'Рожева', 'SPRING', 15, 49.99, 'FEMALE'),
-       ('Куртка', 'XL', 'Чорна', 'WINTER', 8, 79.99, 'UNISEX'),
-       ('Футболка', 'M', 'Червона', 'SUMMER', 10, 19.99, 'UNISEX');
-
-INSERT INTO `order`( datetime, status) VALUES (DEFAULT, default);
-INSERT INTO `order`( datetime, status) VALUES (DEFAULT, default);
-INSERT INTO `order`( datetime, status) VALUES (DEFAULT, default);
-
-INSERT INTO user_order (order_id, user_id, description, datetime)
-VALUES (1, 1, 'Замовлення 1', NOW()),
-       (2, 2, 'Замовлення 2', NOW());
-INSERT INTO clothing_order (clothing_id, order_id, amount, current_price)
-VALUES (1, 1, 5, 99.95),
-       (2, 2, 3, 149.97);
-INSERT INTO delivery (order_id, city, street, house_number, entrance, apartment_number)
-VALUES (1, 'Київ', 'Головна', '123', 1, 101),
-       (2, 'Львів', 'Центральна', '456', 2, 202);
+# INSERT INTO user (name, surname, email, password, phone)
+# VALUES ('Іван', 'Петров', 'ivan@example.com', 'пароль123', '+380123456789'),
+#        ('Марія', 'Іванова', 'maria@example.com', 'пароль456', '+380987654321'),
+#        ('Олег', 'Сидоров', 'oleg@example.com', 'пароль789', '+380777888999');
+# INSERT INTO user (name, surname, email, password, phone, role)
+# VALUES ('Адміністратор', 'Адміністраторович', 'admin@example.com', 'admin123', '+380111222333', 'ADMIN');
+#
+#
+# INSERT INTO clothing (name, size, color, season, amount, actual_price, sex)
+# VALUES ('Футболка 1', 'M', 'Червона', 'SUMMER', 10, 19.99, 'UNISEX'),
+#        ('Шорти', 'L', 'Сині', 'SUMMER', 20, 29.99, 'MALE'),
+#        ('Сукня', 'M', 'Рожева', 'SPRING', 15, 49.99, 'FEMALE'),
+#        ('Куртка', 'XL', 'Чорна', 'WINTER', 8, 79.99, 'UNISEX'),
+#        ('Футболка', 'M', 'Червона', 'SUMMER', 10, 19.99, 'UNISEX');
+#
+# INSERT INTO `order`( datetime, status) VALUES (DEFAULT, default);
+# INSERT INTO `order`( datetime, status) VALUES (DEFAULT, default);
+# INSERT INTO `order`( datetime, status) VALUES (DEFAULT, default);
+#
+# INSERT INTO user_order (order_id, user_id, description, datetime)
+# VALUES (1, 1, 'Замовлення 1', NOW()),
+#        (2, 2, 'Замовлення 2', NOW());
+# INSERT INTO clothing_order (clothing_id, order_id, amount, current_price)
+# VALUES (1, 1, 5, 99.95),
+#        (2, 2, 3, 149.97);
+# INSERT INTO delivery (order_id, city, street, house_number, entrance, apartment_number)
+# VALUES (1, 'Київ', 'Головна', '123', 1, 101),
+#        (2, 'Львів', 'Центральна', '456', 2, 202);

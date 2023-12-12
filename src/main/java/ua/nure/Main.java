@@ -15,6 +15,7 @@ import ua.nure.dao.Observer.EventListener;
 import ua.nure.dao.Observer.EventManager;
 import ua.nure.entity.*;
 import ua.nure.entity.enums.*;
+import ua.nure.memento.MementoUser;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -24,9 +25,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Factory factory = new FactoryDAO();
 
-
-
-        //TEST FIRST PRACTICE
+        /* TEST FIRST PRACTICE
+         */
 //        DeliveryDAO deliveryDAO = factory.getDeliveryDAO();
 //        UserDAO userDAO = factory.getUserDAO();
 //        ClothingDAO clothingDAO = factory.getClothingDAO();
@@ -137,35 +137,71 @@ public class Main {
 //        System.out.println(deliveryDAO.findById(1));
 
 
-        //TEST SECOND PRACTICE
+        /*TEST SECOND PRACTICE
+         */
+//        EventManager eventManager = new EventManager();
+//        UserDAO userDAO = factory.getUserDAO(eventManager);
+//        ClothingDAO clothingDAO = factory.getClothingDAO(eventManager);
+//        DeliveryDAO deliveryDAO = factory.getDeliveryDAO(eventManager);
+//        OrderDAO orderDAO = factory.getOrderDAO(eventManager);
+//
+//        ClothingListener userAddClothingListener = new ClothingListener();
+//        OrderListener userUpdatedOrderListener = new OrderListener();
+//        DeliveryListener userAddDeliveryListener = new DeliveryListener();
+//        UserListener userDeletedUserListener = new UserListener();
+//
+//        eventManager.subscribe("ClothingAdded", userAddClothingListener);
+//        eventManager.subscribe("OrderUpdated", userUpdatedOrderListener);
+//        eventManager.subscribe("UserRemoved", userDeletedUserListener);
+//        eventManager.subscribe("DeliveryAdded", userAddDeliveryListener);
+//
+//        Clothing clothing = new Clothing.Builder("T-Shirt", Size.M, "Red", Season.SUMMER, 10, new BigDecimal("19.99"), Sex.MALE).build();
+//        User user = new User.Builder("John", "Doe", "john.doe@example.com", "password123", "+123456789").build();
+//        Delivery newDelivery = new Delivery.Builder( "тест", "тест", "тест")
+//                .setApartmentNumber(1)
+//                .setEntrance(1)
+//                .setOrder_id(4)
+//                .build();
+//        clothingDAO.add(clothing);
+//        orderDAO.updateStatus(1L,Status.DELIVERED);
+//        userDAO.delete(4);
+//        userDAO.add(user);
+//        clothingDAO.update(clothing);
+//        deliveryDAO.add(newDelivery);
+
+        /*TEST THIRD PRACTICE
+         */
         EventManager eventManager = new EventManager();
         UserDAO userDAO = factory.getUserDAO(eventManager);
-        ClothingDAO clothingDAO = factory.getClothingDAO(eventManager);
-        DeliveryDAO deliveryDAO = factory.getDeliveryDAO(eventManager);
-        OrderDAO orderDAO = factory.getOrderDAO(eventManager);
 
-        ClothingListener userAddClothingListener = new ClothingListener();
-        OrderListener userUpdatedOrderListener = new OrderListener();
-        DeliveryListener userAddDeliveryListener = new DeliveryListener();
-        UserListener userDeletedUserListener = new UserListener();
-
-        eventManager.subscribe("ClothingAdded", userAddClothingListener);
-        eventManager.subscribe("OrderUpdated", userUpdatedOrderListener);
-        eventManager.subscribe("UserRemoved", userDeletedUserListener);
-        eventManager.subscribe("DeliveryAdded", userAddDeliveryListener);
-
-        Clothing clothing = new Clothing.Builder("T-Shirt", Size.M, "Red", Season.SUMMER, 10, new BigDecimal("19.99"), Sex.MALE).build();
-        User user = new User.Builder("John", "Doe", "john.doe@example.com", "password123", "+123456789").build();
-        Delivery newDelivery = new Delivery.Builder( "тест", "тест", "тест")
-                .setApartmentNumber(1)
-                .setEntrance(1)
-                .setOrder_id(4)
+        User user = new User.Builder("John", "Doe", "john.doe@example.com", "password", "123456")
+                .setRole("USER")
                 .build();
-        clothingDAO.add(clothing);
-        orderDAO.updateStatus(1L,Status.DELIVERED);
-        userDAO.delete(4);
-        userDAO.add(user);
-        clothingDAO.update(clothing);
-        deliveryDAO.add(newDelivery);
+
+        MementoUser mementoUser = new MementoUser();
+        mementoUser.add(user, userDAO);
+        System.out.println("-- Initial state");
+        System.out.println(userDAO.findAll());
+
+        user.setName("Jane");
+        user.setEmail("jane.doe@example.com");
+
+        mementoUser.update(user, userDAO);
+        System.out.println("—1 update");
+        System.out.println(userDAO.findAll());
+        user.setName("тест");
+        mementoUser.update(user, userDAO);
+        System.out.println("—2 update");
+        System.out.println(userDAO.findAll());
+        mementoUser.undoUpdate(user, userDAO);
+        System.out.println("—1 undo update");
+        System.out.println(userDAO.findAll());
+        System.out.println("--2 undo update ");
+        mementoUser.undoUpdate(user, userDAO);
+        System.out.println(userDAO.findAll());
+        userDAO.delete(user.getId());
+        System.out.println("--3 undo update after delete object");
+        mementoUser.undoUpdate(user, userDAO);
     }
 }
+

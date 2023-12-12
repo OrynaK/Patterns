@@ -1,20 +1,21 @@
 package ua.nure.dao.EntityDAOImpl;
 
-import ua.nure.dao.ConnectionManager;
 import ua.nure.dao.EntityDAO.UserDAO;
+import ua.nure.dao.Observer.EventListener;
+import ua.nure.dao.Observer.EventManager;
 import ua.nure.entity.User;
-import ua.nure.entity.enums.Role;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserDAOImpl implements UserDAO {
 
+    private final EventManager<User> eventManager;
     Connection con;
 
-    public UserDAOImpl(Connection connection) {
+    public UserDAOImpl(Connection connection, EventManager<User> clothingEventManager) {
         con = connection;
+        this.eventManager = clothingEventManager;
     }
 
     private static final String GET_USER_BY_ID = "SELECT * from user WHERE id=?";
@@ -37,6 +38,7 @@ public class UserDAOImpl implements UserDAO {
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
                     user.setId(keys.getLong(1));
+                    eventManager.notifyEntityAdded("UserAdded", user);
                 }
             }
         } catch (SQLException ex) {
@@ -56,12 +58,12 @@ public class UserDAOImpl implements UserDAO {
             ps.setString(++k, user.getPhone());
             ps.setLong(++k, user.getId());
             ps.executeUpdate();
+            eventManager.notifyEntityUpdated("UserUpdated", user);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return findById(user.getId());
     }
-
 
     @Override
     public void delete(long id) {
@@ -74,6 +76,7 @@ public class UserDAOImpl implements UserDAO {
                 try (PreparedStatement statement = con.prepareStatement(DELETE)) {
                     statement.setLong(1, id);
                     statement.executeUpdate();
+                    eventManager.notifyEntityRemoved("UserRemoved", id);
                 }
             }
         } catch (SQLException ex) {
@@ -123,4 +126,5 @@ public class UserDAOImpl implements UserDAO {
         String phone = rs.getString("phone");
         return new User.Builder(name, surname, email, password, phone).setId(id).setRole(role).build();
     }
+
 }

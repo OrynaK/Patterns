@@ -2,6 +2,7 @@ package ua.nure.dao.EntityDAOImpl;
 
 import ua.nure.dao.ConnectionManager;
 import ua.nure.dao.EntityDAO.OrderDAO;
+import ua.nure.dao.Observer.EventListener;
 import ua.nure.entity.ClothingOrder;
 import ua.nure.entity.Order;
 import ua.nure.entity.UserOrder;

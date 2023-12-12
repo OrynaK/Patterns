@@ -1,5 +1,7 @@
 package ua.nure.dao;
 
+import ua.nure.dao.Observer.EventListener;
+
 import java.util.List;
 
 public interface CRUDRepository<T> {
@@ -12,4 +14,5 @@ public interface CRUDRepository<T> {
     T findById(long id);
 
     List<T> findAll();
+
 }

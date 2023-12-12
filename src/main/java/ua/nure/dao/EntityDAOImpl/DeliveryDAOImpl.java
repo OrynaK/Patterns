@@ -2,6 +2,7 @@ package ua.nure.dao.EntityDAOImpl;
 
 import ua.nure.dao.ConnectionManager;
 import ua.nure.dao.EntityDAO.DeliveryDAO;
+import ua.nure.dao.Observer.EventListener;
 import ua.nure.entity.Delivery;
 
 import java.sql.Connection;

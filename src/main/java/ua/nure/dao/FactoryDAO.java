@@ -8,6 +8,9 @@ import ua.nure.dao.EntityDAOImpl.ClothingDAOImpl;
 import ua.nure.dao.EntityDAOImpl.DeliveryDAOImpl;
 import ua.nure.dao.EntityDAOImpl.OrderDAOImpl;
 import ua.nure.dao.EntityDAOImpl.UserDAOImpl;
+import ua.nure.dao.Observer.EventManager;
+import ua.nure.entity.Clothing;
+import ua.nure.entity.User;
 
 import java.sql.Connection;
 
@@ -20,15 +23,15 @@ public class FactoryDAO implements Factory {
     }
 
     @Override
-    public UserDAO getUserDAO() {
+    public UserDAO getUserDAO(EventManager userEventManager) {
         Connection connection = connectionManager.getConnection();
-        return new UserDAOImpl(connection);
+        return new UserDAOImpl(connection, userEventManager);
     }
 
     @Override
-    public ClothingDAO getClothingDAO() {
+    public ClothingDAO getClothingDAO(EventManager clothingEventManager) {
         Connection connection = connectionManager.getConnection();
-        return new ClothingDAOImpl(connection);
+        return new ClothingDAOImpl(connection, clothingEventManager);
     }
 
     @Override

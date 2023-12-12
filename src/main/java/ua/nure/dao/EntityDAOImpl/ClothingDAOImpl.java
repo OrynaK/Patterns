@@ -1,7 +1,7 @@
 package ua.nure.dao.EntityDAOImpl;
 
-import ua.nure.dao.ConnectionManager;
 import ua.nure.dao.EntityDAO.ClothingDAO;
+import ua.nure.dao.Observer.EventManager;
 import ua.nure.entity.Clothing;
 import ua.nure.entity.enums.Season;
 import ua.nure.entity.enums.Sex;
@@ -12,7 +12,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClothingDAOImpl implements ClothingDAO {
+public class
+ClothingDAOImpl implements ClothingDAO {
+    private final EventManager<Clothing> eventManager;
+
     private static final String GET_ALL_CLOTHES = "SELECT * FROM clothing";
     private static final String UPDATE = "UPDATE clothing SET name=?, size=?, color=?, season=?, amount=?, actual_price=?, sex=? WHERE id=?";
     private static final String DELETE = "DELETE FROM clothing WHERE id=?";
@@ -23,8 +26,9 @@ public class ClothingDAOImpl implements ClothingDAO {
     private static final String UPDATE_AMOUNT = "UPDATE clothing SET amount=? WHERE id=?";
     Connection con;
 
-    public ClothingDAOImpl(Connection connection) {
+    public ClothingDAOImpl(Connection connection, EventManager<Clothing> clothingEventManager) {
         this.con = connection;
+        this.eventManager=clothingEventManager;
     }
 
     @Override
@@ -42,6 +46,7 @@ public class ClothingDAOImpl implements ClothingDAO {
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
                     clothing.setId(keys.getLong(1));
+                    eventManager.notifyEntityAdded("ClothingAdded", clothing);
                 }
             }
         } catch (SQLException ex) {
@@ -63,6 +68,7 @@ public class ClothingDAOImpl implements ClothingDAO {
             ps.setString(++k, clothing.getSex().toString().toUpperCase());
             ps.setLong(++k, clothing.getId());
             ps.executeUpdate();
+            eventManager.notifyEntityUpdated("ClothingUpdated", clothing);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -80,6 +86,7 @@ public class ClothingDAOImpl implements ClothingDAO {
                 try (PreparedStatement statement = con.prepareStatement(DELETE)) {
                     statement.setLong(1, id);
                     statement.executeUpdate();
+                    eventManager.notifyEntityRemoved("ClothingRemoved", id);
                 }
             }
         } catch (SQLException e) {
@@ -106,16 +113,16 @@ public class ClothingDAOImpl implements ClothingDAO {
     @Override
     public List<Clothing> findAll() {
         List<Clothing> clothingList = new ArrayList<>();
-            try (Statement st = con.createStatement()) {
-                try (ResultSet rs = st.executeQuery(GET_ALL_CLOTHES)) {
-                    while (rs.next()) {
-                        clothingList.add(mapClothing(rs));
-                    }
-                    return clothingList;
+        try (Statement st = con.createStatement()) {
+            try (ResultSet rs = st.executeQuery(GET_ALL_CLOTHES)) {
+                while (rs.next()) {
+                    clothingList.add(mapClothing(rs));
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                return clothingList;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Clothing mapClothing(ResultSet rs) throws SQLException {
@@ -126,37 +133,38 @@ public class ClothingDAOImpl implements ClothingDAO {
         String color = rs.getString("color");
         Season season = Season.valueOf(rs.getString("season").toUpperCase());
         int amount = rs.getInt("amount");
-        BigDecimal actualPrice= rs.getBigDecimal("actual_price");
+        BigDecimal actualPrice = rs.getBigDecimal("actual_price");
         Sex sex = Sex.valueOf(rs.getString("sex").toUpperCase());
-        return new Clothing.Builder(name,size,color, season, amount, actualPrice, sex).setId(id).build();
+        return new Clothing.Builder(name, size, color, season, amount, actualPrice, sex).setId(id).build();
     }
 
     @Override
     public List<Clothing> getClothingBySize(Size size) {
         List<Clothing> clothingList = new ArrayList<>();
-            try (PreparedStatement ps = con.prepareStatement(GET_CLOTHING_BY_SIZE)) {
-                int k = 0;
-                ps.setString(++k, size.toString());
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        clothingList.add(mapClothing(rs));
-                    }
-                    return clothingList;
+        try (PreparedStatement ps = con.prepareStatement(GET_CLOTHING_BY_SIZE)) {
+            int k = 0;
+            ps.setString(++k, size.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    clothingList.add(mapClothing(rs));
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                return clothingList;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void updateClothingAmount(long clothingId, int amount)  {
-            try (PreparedStatement ps = con.prepareStatement(UPDATE_AMOUNT)) {
-                int k = 0;
-                ps.setInt(++k, amount);
-                ps.setLong(++k, clothingId);
-                ps.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+    public void updateClothingAmount(long clothingId, int amount) {
+        try (PreparedStatement ps = con.prepareStatement(UPDATE_AMOUNT)) {
+            int k = 0;
+            ps.setInt(++k, amount);
+            ps.setLong(++k, clothingId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 }

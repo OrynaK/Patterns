@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeliveryListener implements EventListener<Delivery> {
-    private List<String> subscribedEventTypes = new ArrayList<>();
 
     @Override
     public void entityAdded(Delivery entity) {
@@ -24,9 +23,5 @@ public class DeliveryListener implements EventListener<Delivery> {
     @Override
     public void entityUpdated(Delivery updatedEntity) {
         System.out.println("It's your subscription! Updated: " + updatedEntity);
-    }
-    @Override
-    public void subscribeToEventType(String eventType) {
-        subscribedEventTypes.add(eventType);
     }
 }

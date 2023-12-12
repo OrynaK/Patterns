@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClothingListener implements EventListener<Clothing> {
-    private List<String> subscribedEventTypes = new ArrayList<>();
-
     @Override
     public void entityAdded(Clothing entity) {
         System.out.println("It's your subscription! added: " + entity);
@@ -23,9 +21,5 @@ public class ClothingListener implements EventListener<Clothing> {
     @Override
     public void entityUpdated(Clothing updatedEntity) {
         System.out.println("It's your subscription! updated: " + updatedEntity);
-    }
-    @Override
-    public void subscribeToEventType(String eventType) {
-        subscribedEventTypes.add(eventType);
     }
 }

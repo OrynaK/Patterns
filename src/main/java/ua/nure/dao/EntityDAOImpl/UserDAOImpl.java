@@ -62,8 +62,9 @@ public class UserDAOImpl implements UserDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return findById(user.getId());
+        return user;
     }
+
 
     @Override
     public void delete(long id) {

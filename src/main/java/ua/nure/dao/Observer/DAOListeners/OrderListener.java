@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderListener implements EventListener<Order> {
-    private List<String> subscribedEventTypes = new ArrayList<>();
 
     @Override
     public void entityAdded(Order entity) {
@@ -23,10 +22,6 @@ public class OrderListener implements EventListener<Order> {
     @Override
     public void entityUpdated(Order updatedEntity) {
         System.out.println("It's your subscription! Updated: " + updatedEntity);
-    }
-    @Override
-    public void subscribeToEventType(String eventType) {
-        subscribedEventTypes.add(eventType);
     }
 }
 

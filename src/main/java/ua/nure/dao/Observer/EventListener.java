@@ -6,6 +6,4 @@ public interface EventListener<T> {
     void entityRemoved(long id);
 
     void entityUpdated(T updatedEntity);
-
-    void subscribeToEventType(String eventType);
 }

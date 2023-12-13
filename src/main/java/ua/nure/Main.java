@@ -13,6 +13,10 @@ import ua.nure.dao.Observer.DAOListeners.OrderListener;
 import ua.nure.dao.Observer.DAOListeners.UserListener;
 import ua.nure.dao.Observer.EventListener;
 import ua.nure.dao.Observer.EventManager;
+import ua.nure.dao.proxy.ProxyClothingDAO;
+import ua.nure.dao.proxy.ProxyDeliveryDAO;
+import ua.nure.dao.proxy.ProxyOrderDAO;
+import ua.nure.dao.proxy.ProxyUserDAO;
 import ua.nure.entity.*;
 import ua.nure.entity.enums.*;
 import ua.nure.memento.MementoUser;
@@ -171,37 +175,91 @@ public class Main {
 
         /*TEST THIRD PRACTICE
          */
+//        EventManager eventManager = new EventManager();
+//        UserDAO userDAO = factory.getUserDAO(eventManager);
+//
+//        User user = new User.Builder("John", "Doe", "john.doe@example.com", "password", "123456")
+//                .setRole("USER")
+//                .build();
+//
+//        MementoUser mementoUser = new MementoUser();
+//        mementoUser.add(user, userDAO);
+//        System.out.println("-- Initial state");
+//        System.out.println(userDAO.findAll());
+//
+//        user.setName("Jane");
+//        user.setEmail("jane.doe@example.com");
+//
+//        mementoUser.update(user, userDAO);
+//        System.out.println("—1 update");
+//        System.out.println(userDAO.findAll());
+//        user.setName("тест");
+//        mementoUser.update(user, userDAO);
+//        System.out.println("—2 update");
+//        System.out.println(userDAO.findAll());
+//        mementoUser.undoUpdate(user, userDAO);
+//        System.out.println("—1 undo update");
+//        System.out.println(userDAO.findAll());
+//        System.out.println("--2 undo update ");
+//        mementoUser.undoUpdate(user, userDAO);
+//        System.out.println(userDAO.findAll());
+//        userDAO.delete(user.getId());
+//        System.out.println("--3 undo update after delete object");
+//        mementoUser.undoUpdate(user, userDAO);
+
+        /*TEST FOURTH PRACTICE
+         */
+//припустимо користувача системи з роллю User
+        Role userRole = Role.USER;
+
         EventManager eventManager = new EventManager();
         UserDAO userDAO = factory.getUserDAO(eventManager);
+        ClothingDAO clothingDAO = factory.getClothingDAO(eventManager);
+        DeliveryDAO deliveryDAO = factory.getDeliveryDAO(eventManager);
+        OrderDAO orderDAO = factory.getOrderDAO(eventManager);
+
+        ProxyUserDAO proxyUserDAO = new ProxyUserDAO(userDAO);
+        ProxyOrderDAO proxyOrderDAO = new ProxyOrderDAO(orderDAO);
+        ProxyDeliveryDAO proxyDeliveryDAO = new ProxyDeliveryDAO(deliveryDAO);
+        ProxyClothingDAO proxyClothingDAO = new ProxyClothingDAO(clothingDAO);
 
         User user = new User.Builder("John", "Doe", "john.doe@example.com", "password", "123456")
-                .setRole("USER")
                 .build();
+//        Clothing newClothing = new Clothing.Builder("тест", Size.XS, "тест", Season.WINTER, 1, new BigDecimal(17), Sex.MALE)
+//                .build();
+        // протестуємо роботу патерна на додаванні нового користувача та видаленні одежі
+        System.out.println("User try to add new user:");
+        System.out.println("Users before add:");
+        System.out.println(proxyUserDAO.findAll());
+        proxyUserDAO.add(user, userRole);
+        System.out.println("Users after add:");
+        System.out.println(proxyUserDAO.findAll());
 
-        MementoUser mementoUser = new MementoUser();
-        mementoUser.add(user, userDAO);
-        System.out.println("-- Initial state");
-        System.out.println(userDAO.findAll());
+        System.out.println("User try to delete the clothing:");
+        System.out.println("Clothes before delete:");
+        System.out.println(proxyClothingDAO.findAll());
+        proxyClothingDAO.delete(1, userRole);
+        System.out.println("Clothes after delete:");
+        System.out.println(proxyClothingDAO.findAll());
 
-        user.setName("Jane");
-        user.setEmail("jane.doe@example.com");
+        System.out.println("Admin try to add new user:");
+        System.out.println("Users before add:");
+        System.out.println(proxyUserDAO.findAll());
+        proxyUserDAO.add(user, Role.ADMIN);
+        System.out.println("Users after add:");
+        System.out.println(proxyUserDAO.findAll());
 
-        mementoUser.update(user, userDAO);
-        System.out.println("—1 update");
-        System.out.println(userDAO.findAll());
-        user.setName("тест");
-        mementoUser.update(user, userDAO);
-        System.out.println("—2 update");
-        System.out.println(userDAO.findAll());
-        mementoUser.undoUpdate(user, userDAO);
-        System.out.println("—1 undo update");
-        System.out.println(userDAO.findAll());
-        System.out.println("--2 undo update ");
-        mementoUser.undoUpdate(user, userDAO);
-        System.out.println(userDAO.findAll());
-        userDAO.delete(user.getId());
-        System.out.println("--3 undo update after delete object");
-        mementoUser.undoUpdate(user, userDAO);
+        System.out.println("Admin try to delete the clothing:");
+        System.out.println("Clothes before delete:");
+        System.out.println(proxyClothingDAO.findAll());
+        proxyClothingDAO.delete(1, Role.ADMIN);
+        System.out.println("Clothes after delete:");
+        System.out.println(proxyClothingDAO.findAll());
+
+        System.out.println("Check authorization after admin add the user. " +
+                "\nUser: "+ proxyUserDAO.authorization(user.getEmail(), user.getPassword())+
+                " successfully authorized");
+
     }
 }
 

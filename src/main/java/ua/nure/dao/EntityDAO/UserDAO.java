@@ -4,4 +4,5 @@ import ua.nure.dao.CRUDRepository;
 import ua.nure.entity.User;
 
 public interface UserDAO extends CRUDRepository<User> {
+    User findByEmailAndPassword(String email, String password);
 }

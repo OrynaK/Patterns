@@ -4,7 +4,8 @@ public enum Status {
     PROCESSING("Processing"),
     ACCEPTED("Accepted"),
     SENT("Sent"),
-    DELIVERED("Delivered");
+    DELIVERED("Delivered"),
+    DENIED("Denied");
     String status;
 
     Status(String status) {

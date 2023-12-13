@@ -24,9 +24,17 @@ public class UserDAOImpl implements UserDAO {
     private static final String ADD_USER = "INSERT INTO user (name, surname, password, email, phone) VALUES (?, ?, ?, ?, ?)";
     private static final String FIND_USER_IN_ORDER = "SELECT * FROM user_order WHERE user_id=?";
     private static final String DELETE = "DELETE FROM user WHERE id=?";
+    private static final String FIND_USER_BY_EMAIL_AND_PASSWORD = "SELECT * from user WHERE email=? AND password=?";
+    private static final String FIND_USER_BY_EMAIL = "SELECT * from user WHERE email=?";
+
 
     @Override
     public long add(User user) {
+        User existingUser = findByEmail(user.getEmail());
+        if (existingUser != null) {
+            throw new RuntimeException("User with this email already exists");
+        }
+
         try (PreparedStatement ps = con.prepareStatement(ADD_USER, Statement.RETURN_GENERATED_KEYS)) {
             int k = 0;
             ps.setString(++k, user.getName());
@@ -105,21 +113,21 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> findAll() {
         List<User> userList = new ArrayList<>();
-            try (Statement st = con.createStatement()) {
-                try (ResultSet rs = st.executeQuery(GET_ALL_USERS)) {
-                    while (rs.next()) {
-                        userList.add(mapUsers(rs));
-                    }
-                    return userList;
+        try (Statement st = con.createStatement()) {
+            try (ResultSet rs = st.executeQuery(GET_ALL_USERS)) {
+                while (rs.next()) {
+                    userList.add(mapUsers(rs));
                 }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                return userList;
             }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private User mapUsers(ResultSet rs) throws SQLException {
-       long id = rs.getInt("id");
-        String name =rs.getString("name");
+        long id = rs.getInt("id");
+        String name = rs.getString("name");
         String surname = rs.getString("surname");
         String password = rs.getString("password");
         String email = rs.getString("email");
@@ -128,4 +136,32 @@ public class UserDAOImpl implements UserDAO {
         return new User.Builder(name, surname, email, password, phone).setId(id).setRole(role).build();
     }
 
+    public User findByEmailAndPassword(String email, String password) {
+        try (PreparedStatement ps = con.prepareStatement(FIND_USER_BY_EMAIL_AND_PASSWORD)) {
+            ps.setString(1, email);
+            ps.setString(2, password);
+            try (ResultSet resultSet = ps.executeQuery()) {
+                if (resultSet.next()) {
+                    return mapUsers(resultSet);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return null;
+    }
+
+    private User findByEmail(String email) {
+        try (PreparedStatement ps = con.prepareStatement(FIND_USER_BY_EMAIL)) {
+            ps.setString(1, email);
+            try (ResultSet resultSet = ps.executeQuery()) {
+                if (resultSet.next()) {
+                    return mapUsers(resultSet);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return null;
+    }
 }
